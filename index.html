@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para Alejandro</title>
+  <style>
+    :root {
+      --bg-main: #050608;
+      --bg-grad-1: #0b1020;
+      --bg-grad-2: #1a0b18;
+      --accent-gold: #f3c14b;   /* león */
+      --accent-hero: #e53935;   /* superhéroe */
+      --accent-messi: #4fc3f7;  /* celeste suave */
+      --text-main: #f5f5f5;
+      --text-soft: #c7c7d6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(79,195,247,0.12), transparent 55%),
+                  radial-gradient(circle at bottom, rgba(243,193,75,0.12), transparent 60%),
+                  linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    /* Canvas de fondo */
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      width: 100%;
+      padding: 28px 22px 24px;
+      background: rgba(5, 6, 8, 0.88);
+      border-radius: 24px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(10px);
+      text-align: center;
+      overflow: hidden;
+      animation: cardFloat 9s ease-in-out infinite;
+    }
+
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .halo-top,
+    .halo-bottom {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .halo-top {
+      top: -120px;
+      right: -80px;
+      background: radial-gradient(circle, var(--accent-messi), transparent);
+      animation: haloFloat1 13s ease-in-out infinite;
+    }
+
+    .halo-bottom {
+      bottom: -140px;
+      left: -90px;
+      background: radial-gradient(circle, var(--accent-gold), transparent);
+      animation: haloFloat2 17s ease-in-out infinite;
+    }
+
+    @keyframes haloFloat1 {
+      0%   { transform: translate(0, 0); opacity: 0.35; }
+      50%  { transform: translate(-10px, 10px); opacity: 0.55; }
+      100% { transform: translate(0, 0); opacity: 0.35; }
+    }
+
+    @keyframes haloFloat2 {
+      0%   { transform: translate(0, 0); opacity: 0.3; }
+      50%  { transform: translate(12px, -8px); opacity: 0.5; }
+      100% { transform: translate(0, 0); opacity: 0.3; }
+    }
+
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: 1.9rem;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      margin: 0 0 1.8rem;
+      font-size: 0.95rem;
+      color: var(--text-soft);
+    }
+
+    .fragment {
+      display: none;
+      margin-bottom: 1.4rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .fragment.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .highlight-lion {
+      color: var(--accent-gold);
+      text-shadow: 0 0 6px rgba(243,193,75,0.6);
+      animation: pulseLion 2.5s ease-in-out infinite;
+    }
+
+    .highlight-hero {
+      color: var(--accent-hero);
+      text-shadow: 0 0 6px rgba(229,57,53,0.7);
+      animation: pulseHero 2.4s ease-in-out infinite;
+    }
+
+    .highlight-messi {
+      color: var(--accent-messi);
+      text-shadow: 0 0 6px rgba(79,195,247,0.7);
+      animation: pulseMessi 2.8s ease-in-out infinite;
+    }
+
+    @keyframes pulseLion {
+      0%, 100% { text-shadow: 0 0 4px rgba(243,193,75,0.4); }
+      50%      { text-shadow: 0 0 12px rgba(243,193,75,0.9); }
+    }
+
+    @keyframes pulseHero {
+      0%, 100% { text-shadow: 0 0 4px rgba(229,57,53,0.4); }
+      50%      { text-shadow: 0 0 12px rgba(229,57,53,0.95); }
+    }
+
+    @keyframes pulseMessi {
+      0%, 100% { text-shadow: 0 0 4px rgba(79,195,247,0.4); }
+      50%      { text-shadow: 0 0 12px rgba(79,195,247,1); }
+    }
+
+    .footer-note {
+      margin-top: 1.2rem;
+      font-size: 0.9rem;
+      color: var(--text-soft);
+    }
+
+    button {
+      margin-top: 0.4rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      background: linear-gradient(135deg, var(--accent-hero), var(--accent-gold));
+      color: #120a06;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.65);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.8);
+      filter: brightness(1.05);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+      filter: brightness(0.97);
+    }
+
+    .steps {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 0.8rem;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      transition: background 0.25s ease, transform 0.25s ease;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: var(--accent-gold);
+      transform: scale(1.2);
+      box-shadow: 0 0 8px rgba(243,193,75,0.8);
+    }
+
+    .icon-strip {
+      margin-top: 0.8rem;
+      font-size: 1.1rem;
+      opacity: 0.9;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .icon-strip span {
+      filter: drop-shadow(0 0 6px rgba(0,0,0,0.7));
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 22px 16px 18px;
+        border-radius: 18px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      .fragment {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="container">
+    <div class="halo-top"></div>
+    <div class="halo-bottom"></div>
+
+    <div id="fragment-1" class="fragment active">
+      <h1>Para Alejandro</h1>
+      <p class="subtitle">Haz clic para leer lo que significas en mi vida.</p>
+      <p class="footer-note">
+        Esta no es una despedida. Es un abrazo en forma de palabras.
+      </p>
+      <div class="icon-strip">
+        <span>🦁</span>
+        <span>🦸‍♂️</span>
+        <span>⚽</span>
+      </div>
+    </div>
+
+    <div id="fragment-2" class="fragment">
+      <p>
+        Alejandro. Cuando escuché tu nombre por primera vez, la canción “Alejandro”
+        tomó un nuevo valor. Ya no era solo una canción: eras tú. Un primo más,
+        blanquito y colorado, otro suquito ocurrente y muy lindo.
+      </p>
+    </div>
+
+    <div id="fragment-3" class="fragment">
+      <p>
+        Poco a poco fui viendo cómo crecías, cómo empezabas a jugar distinto,
+        a convertirte en un niño más grande… más grande que el mismísimo
+        <span class="highlight-messi">Lionel Messi</span>.
+      </p>
+    </div>
+
+    <div id="fragment-4" class="fragment">
+      <p>
+        Crecías, y con el crecimiento también llegaron los problemas:
+        esas matemáticas complicadas, esas que empezabas a preguntarme,
+        y yo siempre quería ayudarte. Aunque no sé si lo hacía bien o mal,
+        porque a veces no te podía explicar, solo terminaba haciéndote todo,
+        sin dudar.
+      </p>
+    </div>
+
+    <div id="fragment-5" class="fragment">
+      <p>
+        Igual, era lindo mantener ese contacto contigo, seguir sabiendo de ese
+        niño ocurrente que, de la noche a la mañana, se convirtió en
+        <span class="highlight-hero">superhéroe</span>.
+      </p>
+      <p>
+        Así es: el más grande superhéroe. Protector de las causas nobles y,
+        por supuesto, protector de su hermanita. El
+        <span class="highlight-lion">león</span> de nuestros corazones.
+      </p>
+    </div>
+
+    <div id="fragment-6" class="fragment">
+      <p>
+        Alejo, Alejo… Tu vida significa demasiado. Tu vida ha sido grandiosa.
+        Has logrado dejar huella, ser el león que gobierna el reino. No fuiste
+        un Scar en mi vida: eres más grande que Mufasa.
+      </p>
+    </div>
+
+    <div id="fragment-7" class="fragment">
+      <p>
+        Eres mi Alejo Siavichay León: el protector matemático de mi mente,
+        el superhéroe de mi corazón.
+      </p>
+      <p class="footer-note">
+        Gracias por existir, Alejo. Pase lo que pase, siempre vas a vivir en nosotros.
+      </p>
+    </div>
+
+    <button id="btn">Siguiente</button>
+
+    <div class="steps">
+      <div class="dot active" data-step="1"></div>
+      <div class="dot" data-step="2"></div>
+      <div class="dot" data-step="3"></div>
+      <div class="dot" data-step="4"></div>
+      <div class="dot" data-step="5"></div>
+      <div class="dot" data-step="6"></div>
+      <div class="dot" data-step="7"></div>
+    </div>
+  </div>
+
+  <script>
+    // Lógica de fragmentos
+    let current = 1;
+    const total = 7;
+    const btn = document.getElementById('btn');
+    const dots = document.querySelectorAll('.dot');
+
+    function showFragment(n) {
+      for (let i = 1; i <= total; i++) {
+        const el = document.getElementById(`fragment-${i}`);
+        if (el) el.classList.remove('active');
+      }
+      const nextEl = document.getElementById(`fragment-${n}`);
+      if (nextEl) nextEl.classList.add('active');
+
+      dots.forEach(dot => {
+        dot.classList.toggle('active', Number(dot.dataset.step) === n);
+      });
+    }
+
+    function setButtonDefaultBehavior() {
+      btn.textContent = 'Siguiente';
+      btn.onclick = () => {
+        current++;
+        if (current > total) current = total;
+        showFragment(current);
+        if (current === total) {
+          btn.textContent = 'Volver a leer';
+          btn.onclick = () => location.reload();
+        }
+      };
+    }
+
+    setButtonDefaultBehavior();
+
+    // Puntos clicables
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const step = Number(dot.dataset.step);
+        current = step;
+        showFragment(step);
+        if (step < total) {
+          setButtonDefaultBehavior();
+        } else {
+          btn.textContent = 'Volver a leer';
+          btn.onclick = () => location.reload();
+        }
+      });
+    });
+
+    // Fondo animado: estrellas + pelotas ⚽ + 10 + leones 🦁
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let items = [];
+    const ITEM_COUNT = 80;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      createItems();
+    }
+
+    function createItems() {
+      items = [];
+      for (let i = 0; i < ITEM_COUNT; i++) {
+        const kindRand = Math.random();
+        let type;
+        if (kindRand < 0.55) type = 'star';
+        else if (kindRand < 0.7) type = 'ball';
+        else if (kindRand < 0.85) type = 'ten';
+        else type = 'lion';
+
+        const sizeBase = type === 'star' ? (Math.random() * 1.2 + 0.4) : (Math.random() * 14 + 18);
+        const speedY = type === 'star'
+          ? (Math.random() * 0.25 + 0.05)
+          : (Math.random() * 0.25 + 0.08);
+        const speedX = (Math.random() - 0.5) * 0.15;
+
+        items.push({
+          type,
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: sizeBase,
+          radius: type === 'star' ? sizeBase : null,
+          alpha: Math.random() * 0.5 + 0.2,
+          speedY,
+          speedX
+        });
+      }
+    }
+
+    function drawItems() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const item of items) {
+        if (item.type === 'star') {
+          ctx.beginPath();
+          ctx.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${item.alpha})`;
+          ctx.fill();
+        } else {
+          ctx.save();
+          ctx.font = `${item.size}px system-ui`;
+          ctx.textBaseline = 'middle';
+          ctx.textAlign = 'center';
+
+          if (item.type === 'ball') {
+            ctx.fillText('⚽', item.x, item.y);
+          } else if (item.type === 'ten') {
+            ctx.fillStyle = `rgba(255,255,255,${item.alpha})`;
+            ctx.font = `bold ${item.size}px system-ui`;
+            ctx.fillText('10', item.x, item.y);
+          } else if (item.type === 'lion') {
+            ctx.fillText('🦁', item.x, item.y);
+          }
+          ctx.restore();
+        }
+
+        // Movimiento
+        item.y += item.speedY;
+        item.x += item.speedX;
+
+        // Reaparecer cuando salen de la pantalla
+        if (item.y > canvas.height + 20) {
+          item.y = -20;
+          item.x = Math.random() * canvas.width;
+        }
+        if (item.x > canvas.width + 30) {
+          item.x = -30;
+        } else if (item.x < -30) {
+          item.x = canvas.width + 30;
+        }
+      }
+
+      requestAnimationFrame(drawItems);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    drawItems();
+  </script>
+</body>
+</html>
